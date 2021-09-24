@@ -145,6 +145,7 @@ def main():
     rrt = Rrt(x_start, x_goal, grid_map, 10000, 0.5, grid_size)
     path = rrt.planning()
     rrt.plotting.animation(rrt.vertex, path, "RRT", True)
+    print("test")
 
 
 if __name__ =='__main__':
