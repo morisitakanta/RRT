@@ -58,6 +58,7 @@ class Rrt:
         node_now = []
         node_now.append(self.s_start)
         for i in range(self.iter_max):
+            node_next = None
             for n_now in node_now:
                 node_next = self.generate_node_next(n_now)
 
@@ -67,7 +68,7 @@ class Rrt:
                         if self.goal_detecter(node, self.s_goal) and len(self.vertex) > 2:
                             return self.generate_path(node, self.s_goal)
                     
-            if len(node_next) > 3:
+            if len(node_next) > 0:
                 node_selected = self.select_node_now(node_next)
             else :
                 node_selected = self.select_node_now(self.vertex)
@@ -88,7 +89,7 @@ class Rrt:
         node_next = []
         node_next.append(node_now)
         expand_size = 7
-        rand_node_num = 5
+        rand_node_num = 10
         for i in range(rand_node_num):
             node = self.generate_random_node(self.goal_sample_rate, self.grid_size, node_now, expand_size, expand_size )
             node.parent = node_now
@@ -141,7 +142,7 @@ def main():
     grid = GridMap(grid_size)
     grid_map = grid.create_grid_map()
 
-    rrt = Rrt(x_start, x_goal, grid_map, 1000, 0.5, grid_size)
+    rrt = Rrt(x_start, x_goal, grid_map, 10000, 0.5, grid_size)
     path = rrt.planning()
     rrt.plotting.animation(rrt.vertex, path, "RRT", True)
 
