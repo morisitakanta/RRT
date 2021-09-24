@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 import env
-from rrt import Node
+import node
 
 
 class Utils:
@@ -51,7 +51,7 @@ class Utils:
         t2 = np.dot(v1, v3) / div
 
         if t1 >= 0 and 0 <= t2 <= 1:
-            shot = Node((o[0] + t1 * d[0], o[1] + t1 * d[1]))
+            shot = node.Node((o[0] + t1 * d[0], o[1] + t1 * d[1]))
             dist_obs = self.get_dist(start, shot)
             dist_seg = self.get_dist(start, end)
             if dist_obs <= dist_seg:
@@ -69,8 +69,8 @@ class Utils:
         t = np.dot([a[0] - o[0], a[1] - o[1]], d) / d2
 
         if 0 <= t <= 1:
-            shot = Node((o[0] + t * d[0], o[1] + t * d[1]))
-            if self.get_dist(shot, Node(a)) <= r + delta:
+            shot = node.Node((o[0] + t * d[0], o[1] + t * d[1]))
+            if self.get_dist(shot, node.Node(a)) <= r + delta:
                 return True
 
         return False

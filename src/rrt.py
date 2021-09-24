@@ -2,46 +2,13 @@ import numpy as np
 import plotting
 import env
 import utils
+import node as nd
 
-class Node:
-    def __init__(self, n):
-        self.x = n[0]
-        self.y = n[1]
-        self.parent = None
-        self.cost = 0
-
-class GridMap:
-    def __init__(self,size):
-        self.env = env.Env()
-        self.x_range = self.env.x_range
-        self.y_range = self.env.y_range
-        self.g_size = size
-
-        self.utils = utils.Utils()
-
-    def is_occupied(self, grid):
-        return self.utils.is_inside_obs(grid)
-
-    def create_grid_map(self):
-        g_map = []
-        for i in range(self.x_range[0], self.x_range[1]+self.g_size, self.g_size):
-            y_ray=[]
-            for j in range(self.y_range[0], self.y_range[1]+self.g_size, self.g_size):
-                node = Node((i,j))
-                y_ray.append(int(self.is_occupied(node)))
-                # print(self.is_occupied(node))
-            g_map.append(y_ray)
-        # self.show(g_map)
-        return g_map
-
-    def show(self, g_map):
-        for i in range(len(g_map)-1, -1, -1):
-            print(g_map[i])
 
 class Rrt:
     def __init__(self, s_start, s_goal, grid_map, iter_max, goal_sample_rate, grid_size):
-        self.s_start = Node(s_start)
-        self.s_goal = Node(s_goal)
+        self.s_start = nd.Node(s_start)
+        self.s_goal = nd.Node(s_goal)
         self.iter_max = iter_max
         self.goal_sample_rate = goal_sample_rate
         self.grid_map = grid_map
@@ -81,9 +48,9 @@ class Rrt:
 # functions
     def generate_random_node(self, goal_sample_rate, grid_size, center, size_x, size_y):
         if np.random.rand() > goal_sample_rate:
-            return Node((np.random.randint(center.x - int(size_x/2), center.x + int(size_x/2)),
+            return nd.Node((np.random.randint(center.x - int(size_x/2), center.x + int(size_x/2)),
                          np.random.randint(center.y - int(size_y/2), center.y + int(size_y/2))))
-        return Node((0,0))
+        return nd.Node((0,0))
 
     def generate_node_next(self, node_now):
         node_next = []
@@ -133,20 +100,3 @@ class Rrt:
         path.append((self.s_start.x, self.s_start.y))
         return path
 # 
-
-def main():
-    x_start = (48, 3)
-    x_goal = (5, 25)
-    grid_size = 1
-
-    grid = GridMap(grid_size)
-    grid_map = grid.create_grid_map()
-
-    rrt = Rrt(x_start, x_goal, grid_map, 10000, 0.5, grid_size)
-    path = rrt.planning()
-    rrt.plotting.animation(rrt.vertex, path, "RRT", True)
-    print("test")
-
-
-if __name__ =='__main__':
-    main()
