@@ -15,21 +15,32 @@ class Plotting:
         self.obs_bound = self.env.obs_boundary
         self.obs_circle = self.env.obs_circle
         self.obs_rectangle = self.env.obs_rectangle
+        self.init_flag = True
 
     def animation(self, nodelist, path, name, animation=False):
-        self.plot_grid(name)
+        self.plot_grid(name, self.obs_bound, self.obs_rectangle, self.obs_circle, self.xI, self.xG, 0)
         self.plot_nodes(nodelist, animation)
         self.plot_path(path)
+
+    def animation_realtime(self, nodelist, name, count):
+        self.plot_grid("RRT realtime.ver", self.obs_bound, self.obs_rectangle, self.obs_circle, self.xI, self.xG, count)
+        self.plot_nodes(nodelist, False)
+        self.graph_draw()
 
     def animation_connect(self, V1, V2, path, name):
         self.plot_grid(name)
         self.plot_visited_connect(V1, V2)
         self.plot_path(path)
 
-    def plot_grid(self, name):
-        fig, ax = plt.subplots()
+    def plot_grid(self, name, obs_bound, obs_rectangle, obs_circle, xI, xG, count):
+        if count == 0:
+            fig = plt.figure()
+        else:
+            self.graph_reset()
 
-        for (ox, oy, w, h) in self.obs_bound:
+        ax = plt.subplot(111)
+
+        for (ox, oy, w, h) in obs_bound:
             ax.add_patch(
                 patches.Rectangle(
                     (ox, oy), w, h,
@@ -39,7 +50,7 @@ class Plotting:
                 )
             )
 
-        for (ox, oy, w, h) in self.obs_rectangle:
+        for (ox, oy, w, h) in obs_rectangle:
             ax.add_patch(
                 patches.Rectangle(
                     (ox, oy), w, h,
@@ -49,7 +60,7 @@ class Plotting:
                 )
             )
 
-        for (ox, oy, r) in self.obs_circle:
+        for (ox, oy, r) in obs_circle:
             ax.add_patch(
                 patches.Circle(
                     (ox, oy), r,
@@ -59,62 +70,22 @@ class Plotting:
                 )
             )
 
-        plt.plot(self.xI[0], self.xI[1], "bs", linewidth=3)
-        plt.plot(self.xG[0], self.xG[1], "gs", linewidth=3)
+        plt.plot(xI[0], xI[1], "bs", linewidth=3)
+        plt.plot(xG[0], xG[1], "gs", linewidth=3)
 
         plt.title(name)
         plt.axis("equal")
 
-    @staticmethod
-    def plot_visited(nodelist, animation):
-        if animation:
-            count = 0
-            for node in nodelist:
-                count += 1
-                if node.parent:
-                    plt.plot([node.parent.x, node.x], [node.parent.y, node.y], "-g")
-                    plt.gcf().canvas.mpl_connect('key_release_event',
-                                                 lambda event:
-                                                 [exit(0) if event.key == 'escape' else None])
-                    if count % 10 == 0:
-                        plt.pause(0.001)
-        else:
-            for node in nodelist:
-                if node.parent:
-                    plt.plot([node.parent.x, node.x], [node.parent.y, node.y], "-g")
-
-    @staticmethod
-    def plot_visited_connect(V1, V2):
-        len1, len2 = len(V1), len(V2)
-
-        for k in range(max(len1, len2)):
-            if k < len1:
-                if V1[k].parent:
-                    plt.plot([V1[k].x, V1[k].parent.x], [V1[k].y, V1[k].parent.y], "-g")
-            if k < len2:
-                if V2[k].parent:
-                    plt.plot([V2[k].x, V2[k].parent.x], [V2[k].y, V2[k].parent.y], "-g")
-
-            plt.gcf().canvas.mpl_connect('key_release_event',
-                                         lambda event: [exit(0) if event.key == 'escape' else None])
-
-            if k % 2 == 0:
-                plt.pause(0.001)
-
-        plt.pause(0.01)
-
-    @staticmethod
-    def plot_path(path):
+    def plot_path(self, path):
         if len(path) != 0:
             plt.plot([x[0] for x in path], [x[1] for x in path], '-r', linewidth=2)
             plt.pause(0.01)
         print("len(path) =", len(path))
         plt.show()
 
-    @staticmethod
-    def plot_nodes(nodelist, animation):
-        del nodelist[0]
-        if animation:
+    def plot_nodes(self, nodelist, animation):
+        if animation == True:
+            del nodelist[0]
             count = 0
             for node in nodelist:
                 count += 1
@@ -128,3 +99,13 @@ class Plotting:
         else :
             for node in nodelist:
                 plt.plot(node.x, node.y, marker = "o", color = "r", markersize = 2)
+                plt.gcf().canvas.mpl_connect('key_release_event',
+                                                lambda event:
+                                                [exit(0) if event.key == 'escape' else None])
+
+    def graph_reset(self):
+        plt.cla()
+
+    def graph_draw(self):
+        plt.draw()
+        plt.pause(0.001)

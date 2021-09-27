@@ -1,7 +1,6 @@
 import numpy as np
 import plotting
 import env
-import utils
 import node as nd
 
 
@@ -21,29 +20,60 @@ class Rrt:
         self.y_range = self.env.y_range
         self.vertex = [self.s_start]
 
-    def planning(self):
+    def planning(self, realtime_animation = False):
         node_now = []
         node_now.append(self.s_start)
-        for i in range(self.iter_max):
-            node_next = None
-            for n_now in node_now:
-                node_next = self.generate_node_next(n_now)
 
-                if node_next != None:
-                    for node in node_next:
-                        self.vertex.append(node)
-                        if self.goal_detecter(node, self.s_goal) and len(self.vertex) > 2:
-                            return self.generate_path(node, self.s_goal)
-                    
-            if len(node_next) > 0:
-                node_selected = self.select_node_now(node_next)
-            else :
-                node_selected = self.select_node_now(self.vertex)
-            node_now.clear
-            for n_now in node_selected:
-                node_now.append(n_now)
-        vertex_len = len(self.vertex)
-        return self.generate_path(self.vertex[vertex_len-1], self.vertex[vertex_len-1])
+        if realtime_animation == False:
+            node_selected = []
+            for i in range(self.iter_max):
+                node_next = None
+                for n_now in node_now:
+                    node_next = self.generate_node_next(n_now)
+
+                    if node_next != None:
+                        for node in node_next:
+                            self.vertex.append(node)
+                            if self.goal_detecter(node, self.s_goal) and len(self.vertex) > 2:
+                                return self.generate_path(node, self.s_goal)
+                        
+                if len(node_next) > 0:
+                    node_selected = self.select_node_now(node_next)
+                else :
+                    node_selected = self.select_node_now(self.vertex)
+                node_now.clear
+                for n_now in node_selected:
+                    node_now.append(n_now)
+            vertex_len = len(self.vertex)
+            return self.generate_path(self.vertex[vertex_len-1], self.vertex[vertex_len-1])
+
+        if realtime_animation == True:
+            node_selected = []
+            for i in range(self.iter_max):
+                node_next = None
+                for n_now in node_now:
+                    node_next = self.generate_node_next(n_now)
+
+                    if len(node_next) > 0:
+                        for node in node_next:
+                            self.vertex.append(node)
+                            if self.goal_detecter(node, self.s_goal) and len(self.vertex) > 2:
+                                return self.generate_path(node, self.s_goal)
+                        
+                if len(node_next) > 0:
+                    node_selected = self.select_node_now(node_next)
+                else :
+                    node_selected = self.select_node_now(self.vertex)
+                node_now.clear()
+                for n_now in node_selected:
+                    node_now.append(n_now)
+
+                self.plotting.animation_realtime(self.vertex, "RRT", i)
+                # print(len(self.vertex))
+
+            vertex_len = len(self.vertex)
+            return self.generate_path(self.vertex[vertex_len-2], self.vertex[vertex_len-1])
+
 
 # functions
     def generate_random_node(self, goal_sample_rate, grid_size, center, size_x, size_y):
@@ -56,7 +86,7 @@ class Rrt:
         node_next = []
         node_next.append(node_now)
         expand_size = 7
-        rand_node_num = 10
+        rand_node_num = 8
         for i in range(rand_node_num):
             node = self.generate_random_node(self.goal_sample_rate, self.grid_size, node_now, expand_size, expand_size )
             node.parent = node_now
