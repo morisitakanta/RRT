@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import collections
+import random
 
 # params
 dataLength = 10  # １つのデータの配列の点数
@@ -21,7 +22,7 @@ if __name__== "__main__":
         plt.plot(data,data, marker="o", color="r", markersize=2) # データをプロット
         plt.draw() # グラフを画面に表示開始
         plt.pause(sleepTime) # SleepTime時間だけ表示を継続
-        print(i)
+        print(random.randrange(10, 20, 3))
     # except KeyboardInterrupt:
         # plt.close()
 # plt.close()

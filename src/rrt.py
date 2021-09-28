@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import plotting
 import env
 import node as nd
@@ -41,7 +42,7 @@ class Rrt:
                     node_selected = self.select_node_now(node_next)
                 else :
                     node_selected = self.select_node_now(self.vertex)
-                node_now.clear
+                node_now.clear()
                 for n_now in node_selected:
                     node_now.append(n_now)
             vertex_len = len(self.vertex)
@@ -78,15 +79,21 @@ class Rrt:
 # functions
     def generate_random_node(self, goal_sample_rate, grid_size, center, size_x, size_y):
         if np.random.rand() > goal_sample_rate:
-            return nd.Node((np.random.randint(center.x - int(size_x/2), center.x + int(size_x/2)),
-                         np.random.randint(center.y - int(size_y/2), center.y + int(size_y/2))))
+            # return nd.Node((np.random.randint(center.x - int(size_x/2), center.x + int(size_x/2)),
+            #                 np.random.randint(center.y - int(size_y/2), center.y + int(size_y/2)) ))
+            max_x = int(center.x + size_x)
+            max_y = int(center.y + size_y)
+            min_x = int(center.x - size_x)
+            min_y = int(center.y - size_y)
+            return nd.Node((random.randrange(min_x, max_x, grid_size),
+                            random.randrange(min_y, max_y, grid_size)))
         return nd.Node((0,0))
 
     def generate_node_next(self, node_now):
         node_next = []
         node_next.append(node_now)
-        expand_size = 7
-        rand_node_num = 8
+        expand_size = 6
+        rand_node_num = 5
         for i in range(rand_node_num):
             node = self.generate_random_node(self.goal_sample_rate, self.grid_size, node_now, expand_size, expand_size )
             node.parent = node_now
@@ -117,7 +124,11 @@ class Rrt:
         return node_list
 
     def goal_detecter(self, node, goal):
-        if node.x == goal.x and node.y == goal.y:
+        max_x = goal.x + self.grid_size
+        max_y = goal.y + self.grid_size
+        min_x = goal.x - self.grid_size
+        min_y = goal.y - self.grid_size
+        if node.x >= min_x and node.x <= max_x and node.y >= min_y and node.y <= max_y:
             return True
         return False
 
