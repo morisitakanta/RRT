@@ -10,6 +10,7 @@ class Env:
         self.obs_boundary = self.obs_boundary()
         self.obs_circle = self.obs_circle()
         self.obs_rectangle = self.obs_rectangle()
+        self.check_points, self.connection = self.test_check_points()
 
     @staticmethod
     def obs_boundary():
@@ -33,11 +34,13 @@ class Env:
         test = [
             [30, 6, 12, 8],
             [30, 18, 12, 8],
-            [8, 6, 12, 8],
-            [8, 18, 12, 8],
+            # [8, 6, 12, 8],
+            # [8, 18, 12, 8],
+            [8, 6, 12, 20],
         ]
 
         return test
+        # return obs_rectangle
 
     @staticmethod
     def obs_circle():
@@ -52,3 +55,12 @@ class Env:
         test = []
 
         return test
+        # return obs_cir
+
+    @staticmethod
+    def test_check_points():
+        # check_points = [(4,4), (25,4), (46, 4), (4,16), (25,16), (46,16), (4,28), (25,28), (46,28)]
+        # connection = [(1,3), (0,2,4), (1,5), (0,4,6), (1,3,5,7), (2,4,8), (3,7), (4,6,8), (5,7)]
+        check_points = [(4,4), (25,4), (46, 4), (25,16), (46,16), (4,28), (25,28), (46,28)]
+        connection = [(1,5), (0,2,3), (1,4), (1,4,6), (2,3,7), (0,6), (5,7,3), (2,6)]
+        return check_points, connection

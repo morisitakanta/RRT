@@ -92,13 +92,13 @@ class Rrt:
     def generate_node_next(self, node_now):
         node_next = []
         node_next.append(node_now)
-        expand_size = 6
+        expand_size = 1
         rand_node_num = 5
         for i in range(rand_node_num):
-            node = self.generate_random_node(self.goal_sample_rate, self.grid_size, node_now, expand_size, expand_size )
+            node = self.generate_random_node(self.goal_sample_rate, self.grid_size, node_now, expand_size, expand_size)
             node.parent = node_now
             if node.x > self.x_range[0] and node.x < self.x_range[1] and node.y > self.y_range[0] and node.y < self.y_range[1]:
-                if self.grid_map[node.x][node.y] != 1:
+                if self.grid_map[node.x][node.y] == 0:
                     flag_nn = True
                     flag_vt = True
                     for nn in node_next:
